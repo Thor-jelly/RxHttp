@@ -40,7 +40,9 @@ public class DownFileRequest extends BaseRequest {
         }
         ApiService apiService = RxHttp.getInstance().getApiService();
         Observable<ResponseBody> responseBodyObservable = apiService.downloadFile(url);
-        responseBodyObservable.observeOn(Schedulers.io())
+        responseBodyObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .map(new Function<ResponseBody, File>() {
                     @Override
                     public File apply(ResponseBody responseBody) throws Exception {
@@ -84,7 +86,8 @@ public class DownFileRequest extends BaseRequest {
 
                         return file;
                     }
-                }).observeOn(AndroidSchedulers.mainThread())
+                })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<File>() {
                     @Override
                     public void onSubscribe(Disposable d) {

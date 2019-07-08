@@ -8,16 +8,28 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.jelly.thor.rxhttp.builder.UploadFileBuilder;
 import com.jelly.thor.rxhttp.callback.BaseCallback;
+import com.jelly.thor.rxhttp.callback.DownFileCallback;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.WebSocket;
+import okhttp3.WebSocketListener;
+import okio.ByteString;
+
 public class MainActivity extends AppCompatActivity {
+
+    private String TAG = "123===l";
+    private WebSocket mSocket;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -148,6 +160,141 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * 下载文件
+     */
+    public void getDownloadFileMethod(View view) {
+        RxHttp.downFile()
+                .build(Environment.getExternalStorageDirectory().getAbsolutePath(), "IMG_20180517_100948.jpg", "https://v5.ishandian.com.cn/shop/upload/download?format=json", new DownFileCallback() {
+                    @Override
+                    public void success(File file) {
+
+                    }
+                });
+    }
+
+    /**
+     * socket请求
+     */
+    public void socketMethod(View view) {
+        /////http://websocket.org/echo.html////测试关闭接口是否有回调的////////////
+       /* Request request = new Request.Builder().url("wss://echo.websocket.org").build();
+//        Request request = new Request.Builder().url("wss://ws.shandian.net:8082").build();
+        OkHttpClient client = new OkHttpClient();
+        WebSocket ws = client.newWebSocket(request, new WebSocketListener() {
+            private static final int NORMAL_CLOSURE_STATUS = 1000;
+
+            @Override
+            public void onOpen(WebSocket webSocket, Response response) {
+                mSocket = webSocket;
+//                webSocket.send("{\"cmd\":\"login\",\"roomId\":\"10010\",\"token\":\"10013-gG6NP4myIFHcvwsB9h6UBABMH5HvM4P0\"}");
+                webSocket.send("Hello, it's SSaurel !");
+                webSocket.send("What's up ?");
+                webSocket.send(ByteString.decodeHex("deadbeef"));
+                //webSocket.close(NORMAL_CLOSURE_STATUS, "我是谁 !");
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, String text) {
+                Log.d(TAG, "Receiving : " + text);
+            }
+
+            @Override
+            public void onMessage(WebSocket webSocket, ByteString bytes) {
+                Log.d(TAG, "Receiving bytes : " + bytes.hex());
+            }
+
+            @Override
+            public void onClosing(WebSocket webSocket, int code, String reason) {
+                //webSocket.close(NORMAL_CLOSURE_STATUS, null);
+                Log.d(TAG, "Closing : " + code + " / " + reason);
+            }
+
+            @Override
+            public void onClosed(WebSocket webSocket, int code, String reason) {
+                super.onClosed(webSocket, code, reason);
+                Log.d(TAG, "onClosed : " + code + " / " + reason);
+            }
+
+            @Override
+            public void onFailure(WebSocket webSocket, Throwable t, Response response) {
+                Log.d(TAG, "Error : " + t.getMessage());
+            }
+        });
+        client.dispatcher().executorService().shutdown();*/
+
+
+        //
+        RxHttp.WebSocket()
+                .url("wss://ws.shandian.net:8082")
+                .newBuild()
+                .execute(new WebSocketListener() {
+                    @Override
+                    public void onOpen(WebSocket webSocket, Response response) {
+                        super.onOpen(webSocket, response);
+                        mSocket = webSocket;
+                        mSocket.send("{\"cmd\":\"login\",\"roomId\":\"10010\",\"token\":\"10013-SMIu3beRBxs4u17M63CY97rTc2TFZVEH\"}");
+                        Log.d(TAG, "onOpen: 连接成功!");
+                    }
+
+                    @Override
+                    public void onMessage(WebSocket webSocket, String text) {
+                        super.onMessage(webSocket, text);
+                        Log.d(TAG, "onMessage: 接收到数据=" + text);
+                    }
+
+                    @Override
+                    public void onMessage(WebSocket webSocket, ByteString bytes) {
+                        super.onMessage(webSocket, bytes);
+                        Log.d(TAG, "onMessage: 接收到数据=" + bytes.utf8());
+                    }
+
+
+                    @Override
+                    public void onClosing(WebSocket webSocket, int code, String reason) {
+                        super.onClosing(webSocket, code, reason);
+                        Log.d(TAG, "onClosing: 正要准备关闭->code:" + code + " --reason:" + reason);
+                    }
+
+                    @Override
+                    public void onClosed(WebSocket webSocket, int code, String reason) {
+                        super.onClosed(webSocket, code, reason);
+                        Log.d(TAG, "onClosed: 关闭->code:" + code + " --reason:" + reason);
+                        Log.d(TAG, "onClosed: 1->" + (mSocket == null));
+                        Log.d(TAG, "onClosed: 2->" + (webSocket == null));
+                    }
+
+                    @Override
+                    public void onFailure(WebSocket webSocket, Throwable t, @Nullable Response response) {
+                        super.onFailure(webSocket, t, response);
+                        Log.d(TAG, "onFailure: 失败->Throwable:" + t.getMessage());
+                        Log.d(TAG, "onFailure: 1->" + (mSocket == null));
+                        Log.d(TAG, "onFailure: 2->" + (webSocket == null));
+                    }
+                });
+    }
+
+    /**
+     * socket取消请求
+     */
+    public void socketCancelMethod(View view) {
+        if (mSocket != null) {
+            mSocket.close(1000, "手动关闭");
+        }
+    }
+
+    /**
+     * socket重试
+     */
+    public void socketAgainMethod(View view) {
+        if (mSocket != null) {
+            //socketMethod();
+            //socket关闭了再发送就没有效果只能重新创建再发送
+            //mSocket.send("{\"cmd\":\"login\",\"roomId\":\"10010\",\"token\":\"10013-bj0Yl0s7dl0iTglCZ9HYJcP0VaHsq5Ls\"}");
+            //Log.d(TAG, "发送数据");
+        }
+    }
+
     private void test() {
         MyView myview = (MyView) findViewById(R.id.mv);
 
@@ -228,4 +375,5 @@ public class MainActivity extends AppCompatActivity {
         compositeDisposable.add(subscribe);
         disposableList.add(subscribe);*/
     }
+
 }
