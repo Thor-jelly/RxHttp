@@ -28,7 +28,7 @@ import okio.ByteString;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String TAG = "123===l";
+    private String TAG = "123===";
     private WebSocket mSocket;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -226,7 +226,8 @@ public class MainActivity extends AppCompatActivity {
 
         //
         RxHttp.WebSocket()
-                .url("wss://ws.shandian.net:8082")
+                .url("wss://echo.websocket.org")
+//                .url("wss://ws.shandian.net:8082")
                 .newBuild()
                 .execute(new WebSocketListener() {
                     @Override
