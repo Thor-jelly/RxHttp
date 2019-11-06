@@ -178,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void socketMethod(View view) {
         /////http://websocket.org/echo.html////测试关闭接口是否有回调的////////////
-       /* Request request = new Request.Builder().url("wss://echo.websocket.org").build();
+        /*Request request = new Request.Builder().url("wss://echo.websocket.org").build();
 //        Request request = new Request.Builder().url("wss://ws.shandian.net:8082").build();
         OkHttpClient client = new OkHttpClient();
         WebSocket ws = client.newWebSocket(request, new WebSocketListener() {
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 mSocket = webSocket;
-//                webSocket.send("{\"cmd\":\"login\",\"roomId\":\"10010\",\"token\":\"10013-gG6NP4myIFHcvwsB9h6UBABMH5HvM4P0\"}");
+                webSocket.send("{\"cmd\":\"login\",\"roomId\":\"10010\",\"token\":\"10013-gG6NP4myIFHcvwsB9h6UBABMH5HvM4P0\"}");
                 webSocket.send("Hello, it's SSaurel !");
                 webSocket.send("What's up ?");
                 webSocket.send(ByteString.decodeHex("deadbeef"));
@@ -223,8 +223,6 @@ public class MainActivity extends AppCompatActivity {
         });
         client.dispatcher().executorService().shutdown();*/
 
-
-        //
         RxHttp.WebSocket()
                 .url("wss://echo.websocket.org")
 //                .url("wss://ws.shandian.net:8082")
@@ -280,6 +278,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void socketCancelMethod(View view) {
         if (mSocket != null) {
+            //mSocket.cancel();
             mSocket.close(1000, "手动关闭");
         }
     }
