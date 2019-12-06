@@ -40,6 +40,13 @@
 </network-security-config>
 ```
 
+或者
+
+```
+<base-config cleartextTrafficPermitted="true">
+</base-config>
+```
+
 ## 2.2 在AndroidManifest.xml中添加下面代码
 
 ```
